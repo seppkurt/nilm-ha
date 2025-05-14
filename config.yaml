@@ -1,0 +1,7 @@
+home_assistant:
+  url: "http://localhost:8123"
+  token: "YOUR_LONG_LIVED_ACCESS_TOKEN"
+  entity_id: "sensor.energy_meter_power"
+poll_interval: 1  # seconds
+window_size: 30   # seconds
+storage_path: "./data/"
