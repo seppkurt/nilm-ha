@@ -1,7 +1,7 @@
 home_assistant:
-  url: "http://localhost:8123"
-  token: "YOUR_LONG_LIVED_ACCESS_TOKEN"
-  entity_id: "sensor.energy_meter_power"
+  url: "https://yslp.duckdns.org:8123"
+  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiY2QwOWZlNGNhNTc0ZWEyOTc1NWY3YzQxMjMzYzAwYyIsImlhdCI6MTc0NzE2OTQ4MSwiZXhwIjoyMDYyNTI5NDgxfQ.8oUZWfxzCllfy7HELGvSxd4jBdVjhNJKqXZ_CqwckXY"
+  entity_id: "sensor.power_current_power"
 poll_interval: 1  # seconds
 window_size: 30   # seconds
 storage_path: "./data/"
