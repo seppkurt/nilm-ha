@@ -1,48 +1,130 @@
+"""
+Main module for collecting power consumption data from Home Assistant.
+"""
+
+import os
 import time
-import requests
+import logging
 import yaml
+import requests
 import pandas as pd
 from datetime import datetime
-import os
 
-# Load config
-with open("config.yaml", "r") as f:
-    config = yaml.safe_load(f)
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('nilm_ha.log'),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
 
-HA_URL = config["home_assistant"]["url"]
-HA_TOKEN = config["home_assistant"]["token"]
-ENTITY_ID = config["home_assistant"]["entity_id"]
-POLL_INTERVAL = config["poll_interval"]
-STORAGE_PATH = config["storage_path"]
+class HomeAssistantError(Exception):
+    """Raised when there is an error connecting to Home Assistant."""
+    pass
 
-os.makedirs(STORAGE_PATH, exist_ok=True)
-csv_path = os.path.join(STORAGE_PATH, "energy_data.csv")
+class DataCollectionError(Exception):
+    """Raised when there is an error collecting data."""
+    pass
 
-headers = {
-    "Authorization": f"Bearer {HA_TOKEN}",
-    "Content-Type": "application/json",
-}
+def load_config():
+    """Load configuration from config.yaml."""
+    try:
+        with open("config.yaml", "r") as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        raise HomeAssistantError("config.yaml not found. Please create it first.")
+    except yaml.YAMLError as e:
+        raise HomeAssistantError(f"Error parsing config.yaml: {e}")
 
-def fetch_energy():
-    url = f"{HA_URL}/api/states/{ENTITY_ID}"
-    resp = requests.get(url, headers=headers)
-    resp.raise_for_status()
-    data = resp.json()
-    return float(data["state"])
+def get_power_data(config):
+    """Get power data from Home Assistant."""
+    url = f"{config['home_assistant']['url']}/api/states/{config['home_assistant']['entity_id']}"
+    headers = {
+        "Authorization": f"Bearer {config['home_assistant']['token']}",
+        "content-type": "application/json",
+    }
+    
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        raise HomeAssistantError(f"Error connecting to Home Assistant: {e}")
+
+def save_data(data, filename):
+    """Save data to CSV file."""
+    try:
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+        data.to_csv(filename, index=False)
+    except Exception as e:
+        raise DataCollectionError(f"Error saving data: {e}")
 
 def main():
-    print("Starting NILM data collector...")
-    while True:
-        try:
-            value = fetch_energy()
-            now = datetime.now().isoformat()
-            print(f"{now}: {value} W")
-            # Append to CSV
-            df = pd.DataFrame([[now, value]], columns=["timestamp", "watts"])
-            df.to_csv(csv_path, mode='a', header=not os.path.exists(csv_path), index=False)
-        except Exception as e:
-            print("Error:", e)
-        time.sleep(POLL_INTERVAL)
+    """Main function for data collection."""
+    try:
+        # Load configuration
+        config = load_config()
+        logger.info("Configuration loaded successfully")
+
+        # Create data directory
+        os.makedirs("data/raw", exist_ok=True)
+        os.makedirs("data/processed", exist_ok=True)
+
+        # Initialize data collection
+        data = []
+        start_time = datetime.now()
+        logger.info(f"Starting data collection at {start_time}")
+
+        # Collect data
+        while True:
+            try:
+                # Get power data
+                power_data = get_power_data(config)
+                
+                # Extract relevant information
+                timestamp = datetime.fromisoformat(power_data['last_updated'])
+                power = float(power_data['state'])
+                state = power_data.get('attributes', {}).get('state', 'unknown')
+                
+                # Add to data list
+                data.append({
+                    'timestamp': timestamp,
+                    'power': power,
+                    'state': state
+                })
+                
+                # Save data periodically
+                if len(data) % config['data_collection']['save_interval'] == 0:
+                    df = pd.DataFrame(data)
+                    save_data(df, f"data/raw/power_data_{start_time.strftime('%Y%m%d_%H%M%S')}.csv")
+                    logger.info(f"Saved {len(data)} data points")
+                
+                # Check if we've reached max samples
+                if len(data) >= config['data_collection']['max_samples']:
+                    break
+                
+                # Wait for next interval
+                time.sleep(config['data_collection']['interval'])
+                
+            except KeyboardInterrupt:
+                logger.info("Data collection interrupted by user")
+                break
+            except Exception as e:
+                logger.error(f"Error during data collection: {e}")
+                time.sleep(5)  # Wait before retrying
+        
+        # Save final data
+        if data:
+            df = pd.DataFrame(data)
+            save_data(df, f"data/raw/power_data_{start_time.strftime('%Y%m%d_%H%M%S')}.csv")
+            logger.info(f"Data collection completed. Total points: {len(data)}")
+        
+    except Exception as e:
+        logger.error(f"Fatal error: {e}")
+        raise
 
 if __name__ == "__main__":
     main()
