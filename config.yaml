@@ -1,14 +1,19 @@
 # Home Assistant Configuration
 home_assistant:
-  url: "http://localhost:8123"  # Home Assistant URL
-  token: ""  # Long-lived access token
-  entity_id: "sensor.power_consumption"  # Power consumption sensor entity ID
+  url: "https://yslp.duckdns.org:8123"  # Home Assistant URL
+  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiY2QwOWZlNGNhNTc0ZWEyOTc1NWY3YzQxMjMzYzAwYyIsImlhdCI6MTc0NzE2OTQ4MSwiZXhwIjoyMDYyNTI5NDgxfQ.8oUZWfxzCllfy7HELGvSxd4jBdVjhNJKqXZ_CqwckXY"  # Long-lived access token
+#  entity_id: "sensor.shellypro3em_34987a4627a4_total_active_power"  # Power consumption sensor entity ID
+#  update_interval: 60  # Data collection interval in seconds
+  entity_id: sensor.power_current_power"  # Power consumption sensor entity ID
   update_interval: 60  # Data collection interval in seconds
+
 
 # Data Collection
 data_collection:
   save_interval: 3600  # Save data every hour
   data_dir: "data/raw"  # Directory for raw data files
+  max_samples: 10000  # Maximum number of samples to collect
+  interval: 10  # Data collection interval in seconds
 
 # Event Detection
 event_detection:
