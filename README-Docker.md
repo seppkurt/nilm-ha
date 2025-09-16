@@ -58,7 +58,7 @@ open http://localhost:4444
 
 ```bash
 # Check container status
-docker-compose ps
+docker compose ps
 
 # View logs
 ./scripts/logs.sh
@@ -77,5 +77,5 @@ All data is stored inside the container:
 
 ```bash
 # Rebuild with latest changes
-docker-compose up -d --build
+docker compose up -d --build
 ```
