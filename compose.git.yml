@@ -3,7 +3,7 @@ version: '3.8'
 services:
   nilm-ha:
     build:
-      context: https://github.com/seppkurt/nilm-ha.git
+      context: .
       dockerfile: Dockerfile
     container_name: nilm-ha
     ports:
