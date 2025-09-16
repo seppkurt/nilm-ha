@@ -7,4 +7,4 @@ docker-compose down
 docker-compose up -d
 
 echo "✅ Container restarted successfully!"
-echo "🌐 Web Interface: http://localhost:8080"
+echo "🌐 Web Interface: http://localhost:4444"

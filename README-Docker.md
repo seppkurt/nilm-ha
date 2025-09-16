@@ -7,7 +7,7 @@
 ./scripts/start.sh
 
 # Open web interface
-open http://localhost:8080
+open http://localhost:4444
 ```
 
 ## 📋 Available Commands
@@ -21,9 +21,9 @@ open http://localhost:8080
 
 ## 🌐 Web Interface
 
-- **Main Dashboard**: http://localhost:8080
-- **API Status**: http://localhost:8080/api/status
-- **Unlabeled Events**: http://localhost:8080/api/events/unlabeled
+- **Main Dashboard**: http://localhost:4444
+- **API Status**: http://localhost:4444/api/status
+- **Unlabeled Events**: http://localhost:4444/api/events/unlabeled
 
 ## 🔧 Features
 
@@ -49,7 +49,7 @@ open http://localhost:8080
 ## 📊 Usage
 
 1. **Start Container**: `./scripts/start.sh`
-2. **Open Web Interface**: http://localhost:8080
+2. **Open Web Interface**: http://localhost:4444
 3. **Start Collection**: Click "Start Collection" button
 4. **Label Events**: Use the web interface to label detected events
 5. **Monitor Progress**: View real-time statistics

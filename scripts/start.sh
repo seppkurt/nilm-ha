@@ -14,8 +14,8 @@ sleep 10
 # Check if container is running
 if docker-compose ps | grep -q "Up"; then
     echo "✅ Container started successfully!"
-    echo "🌐 Web Interface: http://localhost:8080"
-    echo "📊 API Status: http://localhost:8080/api/status"
+    echo "🌐 Web Interface: http://localhost:4444"
+    echo "📊 API Status: http://localhost:4444/api/status"
     echo ""
     echo "📝 Available commands:"
     echo "  ./scripts/stop.sh     - Stop the container"
