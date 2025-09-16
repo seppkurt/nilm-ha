@@ -1,29 +1,29 @@
 # Home Assistant Configuration
 home_assistant:
-  url: "https://yslp.duckdns.org:8123"  # Home Assistant URL
-  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiY2QwOWZlNGNhNTc0ZWEyOTc1NWY3YzQxMjMzYzAwYyIsImlhdCI6MTc0NzE2OTQ4MSwiZXhwIjoyMDYyNTI5NDgxfQ.8oUZWfxzCllfy7HELGvSxd4jBdVjhNJKqXZ_CqwckXY"  # Long-lived access token
+  url: "${HA_URL}"  # Home Assistant URL
+  token: "${HA_TOKEN}"  # Long-lived access token
 #  entity_id: "sensor.shellypro3em_34987a4627a4_total_active_power"  # Power consumption sensor entity ID
 #  update_interval: 60  # Data collection interval in seconds
-  entity_id: "sensor.power_current_power"  # Power consumption sensor entity ID
+  entity_id: "${HA_ENTITY_ID}"  # Power consumption sensor entity ID
   update_interval: 60  # Data collection interval in seconds
 
 
 # Data Collection
 data_collection:
-  save_interval: 100  # Save data every 100 samples (for testing)
+  save_interval: ${SAVE_INTERVAL}  # Save data every N samples
   data_dir: "data/raw"  # Directory for raw data files
-  max_samples: 10000  # Maximum number of samples to collect
-  interval: 10  # Data collection interval in seconds
+  max_samples: ${MAX_SAMPLES}  # Maximum number of samples to collect
+  interval: ${COLLECTION_INTERVAL}  # Data collection interval in seconds
 
 # Event Detection
 event_detection:
-  threshold: 20  # Minimum power change to consider as an event (Watts)
-  min_peak_distance: 10  # Minimum samples between events
-  window_size: 30  # Window size for event feature extraction
+  threshold: ${EVENT_THRESHOLD}  # Minimum power change to consider as an event (Watts)
+  min_peak_distance: ${MIN_PEAK_DISTANCE}  # Minimum samples between events
+  window_size: ${WINDOW_SIZE}  # Window size for event feature extraction
 
 # NILM Model
 nilm_model:
-  n_appliances: 5  # Number of appliances to identify
+  n_appliances: ${N_APPLIANCES}  # Number of appliances to identify
   model_dir: "models"  # Directory for saved models
 
 # Visualization
