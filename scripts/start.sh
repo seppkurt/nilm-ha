@@ -5,14 +5,15 @@
 echo "🚀 Starting NILM Container..."
 
 # Build and start the container
-docker-compose up -d --build
+docker build -t nilm-ha .
+docker run -d --name nilm-ha --env-file .env -p 4444:8080 --restart unless-stopped nilm-ha
 
 # Wait for container to be ready
 echo "⏳ Waiting for container to start..."
 sleep 10
 
 # Check if container is running
-if docker-compose ps | grep -q "Up"; then
+if docker ps | grep -q "nilm-ha"; then
     echo "✅ Container started successfully!"
     echo "🌐 Web Interface: http://localhost:4444"
     echo "📊 API Status: http://localhost:4444/api/status"
