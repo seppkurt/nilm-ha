@@ -28,5 +28,8 @@ RUN mkdir -p data/raw data/processed
 # Expose port for web interface
 EXPOSE 8080
 
+# Create startup script
+RUN echo '#!/bin/bash\npython main.py &\npython app.py' > /app/start.sh && chmod +x /app/start.sh
+
 # Default command (can be overridden)
-CMD ["python", "app.py"]
+CMD ["/app/start.sh"]

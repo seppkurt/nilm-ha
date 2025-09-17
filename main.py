@@ -31,10 +31,34 @@ class DataCollectionError(Exception):
     pass
 
 def load_config():
-    """Load configuration from config.yaml."""
+    """Load configuration from config.yaml and environment variables."""
     try:
         with open("config.yaml", "r") as f:
-            return yaml.safe_load(f)
+            config = yaml.safe_load(f)
+        
+        # Override with environment variables if available
+        if 'HA_URL' in os.environ:
+            config['home_assistant']['url'] = os.environ['HA_URL']
+        if 'HA_TOKEN' in os.environ:
+            config['home_assistant']['token'] = os.environ['HA_TOKEN']
+        if 'HA_ENTITY_ID' in os.environ:
+            config['home_assistant']['entity_id'] = os.environ['HA_ENTITY_ID']
+        if 'EVENT_THRESHOLD' in os.environ:
+            config['event_detection']['threshold'] = int(os.environ['EVENT_THRESHOLD'])
+        if 'MIN_PEAK_DISTANCE' in os.environ:
+            config['event_detection']['min_peak_distance'] = int(os.environ['MIN_PEAK_DISTANCE'])
+        if 'WINDOW_SIZE' in os.environ:
+            config['event_detection']['window_size'] = int(os.environ['WINDOW_SIZE'])
+        if 'SAVE_INTERVAL' in os.environ:
+            config['data_collection']['save_interval'] = int(os.environ['SAVE_INTERVAL'])
+        if 'MAX_SAMPLES' in os.environ:
+            config['data_collection']['max_samples'] = int(os.environ['MAX_SAMPLES'])
+        if 'COLLECTION_INTERVAL' in os.environ:
+            config['data_collection']['interval'] = int(os.environ['COLLECTION_INTERVAL'])
+        if 'N_APPLIANCES' in os.environ:
+            config['nilm_model']['n_appliances'] = int(os.environ['N_APPLIANCES'])
+            
+        return config
     except FileNotFoundError:
         raise HomeAssistantError("config.yaml not found. Please create it first.")
     except yaml.YAMLError as e:
